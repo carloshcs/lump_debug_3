@@ -127,26 +127,11 @@ class UI:
                 use_container_width=True,
                 key=self._next_chart_key(S, "plot_path"),
             )
-        layer_time_base = None
         if "info" in S.cache:
-            layer_time_base = S.cache["info"].get("layer_time")
-
-        layer_time_opt = None
-        if "info_opt" in S.cache:
-            layer_time_opt = S.cache["info_opt"].get("layer_time")
-
-        if layer_time_base:
-            if layer_time_opt:
-                fig = plot_layer_times_overlay(layer_time_base, layer_time_opt)
-                key_name = "plot_layer_times_overlay"
-            else:
-                fig = plot_layer_times(layer_time_base, "Layer time per layer (base)")
-                key_name = "plot_layer_times_base"
-
             self.times_slot.plotly_chart(
-                fig,
+                plot_layer_times(S.cache["info"]["layer_time"], "Layer time per layer (base)"),
                 use_container_width=True,
-                key=self._next_chart_key(S, key_name),
+                key=self._next_chart_key(S, "plot_layer_times_base"),
             )
         if "pairs_point" in S.cache and "pairs_mean" in S.cache:
             self.sub_base_slot.plotly_chart(
