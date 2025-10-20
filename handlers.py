@@ -196,11 +196,13 @@ def optimize_to_target(
     # Cache + logs
     S.cache["s_opt"] = s_opt
     S.cache["t_opt"] = t_opt
+    S.cache["info_opt"] = info_opt
     S.cache["pp_opt"], S.cache["pm_opt"] = pp_opt, pm_opt
     logs_slot.code("\n".join(str(x) for x in logs_opt) if isinstance(logs_opt, list) else str(logs_opt))
 
     # Overlay and visuals
-    ui.sub_overlay_slot.empty()
+    if ui.sub_overlay_slot is not None:
+        ui.sub_overlay_slot.empty()
     S.overlay_tick += 1
     ui.draw_opt_overlay_if_available(S)
 
