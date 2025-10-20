@@ -68,6 +68,38 @@ def plot_layer_times(layer_time, title):
 
 
 
+def plot_layer_times_overlay(base_layer_time, opt_layer_time):
+    import plotly.graph_objects as go
+
+    fig = go.Figure()
+
+    def add_trace(name, pairs, dash=None):
+        if not pairs:
+            return
+        xs = [L for (L, _) in pairs]
+        ys = [t for (_, t) in pairs]
+        fig.add_scatter(
+            x=xs,
+            y=ys,
+            mode="lines+markers",
+            name=name,
+            line=(dict(dash=dash) if dash else None)
+        )
+
+    add_trace("Base", base_layer_time)
+    add_trace("Optimized", opt_layer_time, dash="dash")
+
+    fig.update_layout(
+        title="Layer time per layer (base vs optimized)",
+        xaxis_title="Layer number",
+        yaxis_title="Layer time (s)"
+    )
+    fig.update_xaxes(dtick=1)
+
+    return fig
+
+
+
 def plot_substracte(pairs_point, pairs_mean, title):
     Lp = [L for (L,_) in pairs_point]; Tp = [T for (_,T) in pairs_point]
     Lm = [L for (L,_) in pairs_mean];  Tm = [T for (_,T) in pairs_mean]

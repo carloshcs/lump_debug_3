@@ -9,6 +9,7 @@ import streamlit as st
 from viz import (
     plot_path_interactive,
     plot_layer_times,
+    plot_layer_times_overlay,
     plot_substracte,
     plot_substracte_overlay,
 )
