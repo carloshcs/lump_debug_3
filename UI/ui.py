@@ -44,6 +44,20 @@ class UI:
         self.front_opt_slot = None
 
     # ----------- helpers -----------
+    def _next_chart_key(self, S, name: str) -> str:
+        """Return a unique Streamlit component key for charts.
+
+        Streamlit re-creates the widgets on every run and relies on the
+        developer-provided ``key`` to distinguish components that would
+        otherwise look identical.  Without unique keys, subsequent
+        re-renders (for example during optimisation) may trigger
+        duplicated component ID errors.  We keep a counter on the state
+        object so that each chart rendered through the UI gets a fresh
+        key.
+        """
+        S.chart_tick += 1
+        return f"{name}_{S.chart_tick}"
+
     def _ensure_base_chart_slots(self):
         if self.base_chart_container is None:
             self.base_chart_container = st.container()
@@ -103,10 +117,6 @@ class UI:
     def draw_base_charts(self, S):
         self._ensure_base_chart_slots()
 
-        def next_chart_key(name: str) -> str:
-            S.chart_tick += 1
-            return f"{name}_{S.chart_tick}"
-
         if "t" in S.cache and "bounds" in S.cache:
             self.path_slot.plotly_chart(
                 plot_path_interactive(
@@ -114,16 +124,19 @@ class UI:
                     f"Printed path | length={S.cache.get('Ltot', '?')} m | lumps={len(S.cache['t'])}"
                 ),
                 use_container_width=True,
+                key=self._next_chart_key(S, "plot_path"),
             )
         if "info" in S.cache:
             self.times_slot.plotly_chart(
                 plot_layer_times(S.cache["info"]["layer_time"], "Layer time per layer (base)"),
                 use_container_width=True,
+                key=self._next_chart_key(S, "plot_layer_times_base"),
             )
         if "pairs_point" in S.cache and "pairs_mean" in S.cache:
             self.sub_base_slot.plotly_chart(
                 plot_substracte(S.cache["pairs_point"], S.cache["pairs_mean"], "Layer Substrate Temperature (base)"),
                 use_container_width=True,
+                key=self._next_chart_key(S, "plot_sub_base"),
             )
 
     def draw_opt_overlay_if_available(self, S):
@@ -137,7 +150,7 @@ class UI:
                     S.cache["pm_opt"]
                 ),
                 use_container_width=True,
-                key=f"plot_sub_overlay_{S.overlay_tick}"
+                key=self._next_chart_key(S, f"plot_sub_overlay_{S.overlay_tick}")
             )
 
     def show_gifs(self, kind: str, S, last_frame_path_fn):
